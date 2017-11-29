@@ -17,6 +17,7 @@ eselect news read
 # TODO not need
 #emerge --update --deep --newuse @world
 
+# set timezone
 echo "Asia/Tokyo" > /etc/timezone
 
 # configure locales
@@ -28,12 +29,19 @@ source /etc/profile
 
 # installing the kernel sources 'gentoo-sources'
 emerge sys-kernel/gentoo-sources
-# installing the kernel using genkernel
-emerge sys-kernel/genkernel
-genkernel all
+# # installing the kernel using genkernel
+# emerge sys-kernel/genkernel
+# genkernel all
+cd /usr/src/linux
+make defconfig
+make localyesconfig
+make && make modules_install
+make install
 
 # creating the fstab file
 blkid /dev/vda1 -o value -s UUID | while read uuid; do echo UUID=$uuid / ext4 defaults,noatime,discard 0 1; done >> /etc/fstab
+#blkid /dev/vdb1 -o value -s UUID | while read uuid; do echo UUID=$uuid / ext4 defaults,noatime,discard 0 1; done >> /etc/fstab
+
 
 # configuring the network
 echo config_eth0=\"dhcp\" >> /etc/conf.d/net
