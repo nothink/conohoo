@@ -98,4 +98,9 @@ echo 'remove old setting files' > $PROGRESS_PATH
 find /etc ! -newermt "1970-01-02" -print0 | xargs -0 rm -rf
 source /etc/profile
 
+# set next cleanup script
+cd /
+wget https://raw.githubusercontent.com/nothink/conohoo/master/src/sh/replace/cleanup.sh
+mv cleanup.sh /etc/local.d/cleanup.sh
+
 sync; reboot -f
