@@ -51,8 +51,9 @@ emerge sys-kernel/gentoo-sources
 echo 'build new kerenel' > $PROGRESS_PATH
 mv /.config /usr/src/linux/
 cd /usr/src/linux
-yes "" | make olddconfig
-yes "" | make localyesconfig
+make olddefconfig
+make localmodconfig
+make localyesconfig
 
 make && make modules_install
 make install

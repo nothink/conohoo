@@ -29,6 +29,10 @@ mv /sbin/modprobe /sbin/.modprobe
 find / -print0 | xargs -0 touch -d "1970-01-01 00:00 +0000" -m
 mv /sbin/.modprobe /sbin/modprobe
 
+# get next cleanup script
+cd /
+wget https://raw.githubusercontent.com/nothink/conohoo/master/src/sh/replace/cleanup.sh -O /cleanup.sh
+
 # download the gentoo stage tarball
 echo 'download the gentoo stage tarball' > $PROGRESS_PATH
 cd /tmp
@@ -98,9 +102,8 @@ echo 'remove old setting files' > $PROGRESS_PATH
 find /etc ! -newermt "1970-01-02" -print0 | xargs -0 rm -rf
 source /etc/profile
 
-# set next cleanup script
-cd /
-wget https://raw.githubusercontent.com/nothink/conohoo/master/src/sh/replace/cleanup.sh
-mv cleanup.sh /etc/local.d/cleanup.sh
+# move next sctipt to /etc/local.d
+mv /cleanup.sh /etc/local.d/cleanup.start
+chmod 755 /etc/local.d/cleanup.start
 
 sync; reboot -f
