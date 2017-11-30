@@ -1,55 +1,75 @@
 #!/bin/bash
 
+PROGRESS_DIR=/progress
+PROGRESS_PATH=/progress/progress
+
 # boot http progress server
+if [ ! -d $PROGRESS_DIR ]; then
+    mkdir $PROGRESS_DIR
+fi
 cd /progress
-PROGRESS_PATH=$(pwd)/progress
-echo 'boot Debian' > $PROGRESS_PATH
+echo 'boot Stage3' > $PROGRESS_PATH
 nohup python3 -m http.server 80 &
 #################################################################################
 cd /
 
-# copy kernel conf
+# copy .config
+echo 'copy .config' > $PROGRESS_PATH
 cp /boot/config* /.config
 touch /.config
 
 # remove old libs
+echo 'remove old libs' > $PROGRESS_PATH
 rm -rf /lib_ /usr/lib_
 
 # overwrite modprobe
+echo 'overwrite modprobe' > $PROGRESS_PATH
 emerge sys-apps/kmod
 
-# recover fstab
+# create swapfile (4GB)
+dd if=/dev/zero of=/swapfile bs=1M count=4096
+mkswap /swapfile
+swapon /swapfile
+
+# recover and fix fstab
+echo 'recover and fix fstab' > $PROGRESS_PATH
 cp /usr/share/baselayout/fstab /etc/fstab
-# fix fstab
 blkid /dev/vda2 -o value -s UUID | while read uuid; do echo UUID=$uuid / ext4 defaults,noatime,discard 0 1; done >> /etc/fstab
+echo /swapfile none swap sw,loop 0 0 >> /etc/fstab
 
 # remove old files
+echo 'remove old files' > $PROGRESS_PATH
 find / ! -newermt "1970-01-02" -print0 | xargs -0 rm -rf
-# remove old kernels symlinks
 rm /initrd.img /initrd.img.old /vmlinuz /vmlinuz.old
 
 source /etc/profile
 
-# installing the kernel sources 'gentoo-sources'
+# install the kernel sources
+echo 'install the kernel sources' > $PROGRESS_PATH
 emerge sys-kernel/gentoo-sources
-# copy config
-mv /.config /usr/src/linux/
 # build new kerenel
+echo 'build new kerenel' > $PROGRESS_PATH
+mv /.config /usr/src/linux/
 cd /usr/src/linux
 make olddefconfig
-yes ' ' | make localyesconfig
+yes | make localyesconfig
 
 make && make modules_install
 make install
 
 # build initramfs
+echo 'build initramfs' > $PROGRESS_PATH
 emerge sys-kernel/genkernel
 genkernel --install initramfs
 
-# installing grub2
+# install grub2
+echo 'install grub2' > $PROGRESS_PATH
 emerge sys-boot/grub
 grub-install /dev/vda
 grub-mkconfig -o /boot/grub/grub.cfg
+
+# remove progress
+rm -rf $PROGRESS_DIR
 
 # shutdown
 source /etc/profile
