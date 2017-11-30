@@ -1,12 +1,24 @@
 #!/bin/bash
 
+# boot http progress server
+mkdir /progress
+cd /progress
+PROGRESS_PATH=$(pwd)/progress
+echo 'boot Debian' > $PROGRESS_PATH
+nohup python3 -m http.server 80 &
+#################################################################################
+cd /
+
 # installing bzip2
+echo 'installing bzip2' > $PROGRESS_PATH
 apt-get --force-yes install bzip2
 
 # save fstab temporary
+echo 'save fstab temporary' > $PROGRESS_PATH
 cp /etc/fstab /tmp/fstab
 
-# change all file's datetime to epoch (withdout modprobe)
+# change datetime of all files to epoch (withdout modprobe)
+echo 'change all files datetime to epoch' > $PROGRESS_PATH
 mv /sbin/modprobe /sbin/.modprobe
 find / -print0 | xargs -0 touch -d "1970-01-01 00:00 +0000" -m
 mv /sbin/.modprobe /sbin/modprobe
