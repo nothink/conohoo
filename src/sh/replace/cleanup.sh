@@ -28,6 +28,7 @@ emerge sys-apps/kmod
 
 # create swapfile (4GB)
 dd if=/dev/zero of=/swapfile bs=1M count=4096
+chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
 
@@ -52,8 +53,28 @@ echo 'build new kerenel' > $PROGRESS_PATH
 mv /.config /usr/src/linux/
 cd /usr/src/linux
 make olddefconfig
-make localmodconfig
-make localyesconfig
+# localmodconfig / localyesconfig has sometimes wait for input
+emerge expect
+expect -c "
+    set timeout 120
+    spawn make localmodconfig
+    while {1} {
+        expect \"(NEW)\" {
+            send \"\n\"
+            interact
+        }
+    }
+"
+expect -c "
+    set timeout 120
+    spawn make localyesconfig
+    while {1} {
+        expect \"(NEW)\" {
+            send \"\n\"
+            interact
+        }
+    }
+"
 
 make && make modules_install
 make install
@@ -64,7 +85,7 @@ emerge sys-kernel/genkernel
 genkernel --install initramfs
 
 # install grub2
-echo 'install grub2' > $PROGRESS_PATH
+echo 'install grub' > $PROGRESS_PATH
 emerge sys-boot/grub
 grub-install /dev/vda
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -72,6 +93,8 @@ grub-mkconfig -o /boot/grub/grub.cfg
 # remove progress
 rm -rf $PROGRESS_DIR
 
+# remove self
+rm /etc/local.d/cleanup.start
+
 # shutdown
-source /etc/profile
-shutdown -h now
+#shutdown -h now
