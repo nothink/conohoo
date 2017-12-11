@@ -3,13 +3,13 @@
 PASS=conoha
 
 PROGRESS_DIR=/progress
-PROGRESS_PATH=/progress/progress
+PROGRESS_PATH=$PROGRESS_DIR/progress
 
 # boot http progress server
 if [ ! -d $PROGRESS_DIR ]; then
     mkdir $PROGRESS_DIR
 fi
-cd /progress
+cd $PROGRESS_DIR
 echo 'boot Debian' > $PROGRESS_PATH
 nohup python3 -m http.server 80 &
 #################################################################################

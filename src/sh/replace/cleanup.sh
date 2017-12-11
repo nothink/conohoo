@@ -1,14 +1,14 @@
 #!/bin/bash
 
 PROGRESS_DIR=/progress
-PROGRESS_PATH=/progress/progress
+PROGRESS_PATH=$PROGRESS_DIR/progress
 
 # boot http progress server
 if [ ! -d $PROGRESS_DIR ]; then
     mkdir $PROGRESS_DIR
 fi
-cd /progress
-echo 'boot Stage3' > $PROGRESS_PATH
+cd $PROGRESS_DIR
+echo 'boot in Stage3' > $PROGRESS_PATH
 nohup python3 -m http.server 80 &
 #################################################################################
 cd /
@@ -97,4 +97,4 @@ rm -rf $PROGRESS_DIR
 rm /etc/local.d/cleanup.start
 
 # shutdown
-#shutdown -h now
+shutdown -h now
