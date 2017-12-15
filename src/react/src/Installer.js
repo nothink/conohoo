@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import AppBar from 'material-ui/AppBar';
+import Paper from 'material-ui/Paper'
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem'
 import TextField from 'material-ui/TextField';
@@ -65,9 +66,18 @@ class Installer extends Component {
     }
 
     render() {
+        const paperStyle = {
+            width: 'auto',
+            margin: 20,
+            padding: 20,
+            textAlign: 'left',
+            display: 'inline-block',
+        };
+
         return (
             <div>
             <AppBar title="インストール" iconClassNameRight="muidocs-icon-navigation-expand-more" showMenuIconButton={false} />
+            <Paper style={paperStyle} zDepth={1}>
             <p>希望するインストールオプションを選択してください。</p>
                 <form action="http://localhost:9999/install-api" method="post">
                     <SelectField name="flavor" value={this.state.flavor} floatingLabelText="VMプラン（フレーバー）" onChange={this.handleFlavorChange}>
@@ -85,6 +95,7 @@ class Installer extends Component {
                     <br />
                     <RaisedButton type="submit" label="認証" primary={true} />
                 </form>
+            </Paper>
             </div>
         );
     }
