@@ -27,6 +27,7 @@ echo 'overwrite modprobe' > $PROGRESS_PATH
 emerge sys-apps/kmod
 
 # create swapfile (4GB)
+echo 'create swapfile' > $PROGRESS_PATH
 dd if=/dev/zero of=/swapfile bs=1M count=4096
 chmod 600 /swapfile
 mkswap /swapfile
@@ -42,8 +43,17 @@ echo /swapfile none swap sw,loop 0 0 >> /etc/fstab
 echo 'remove old files' > $PROGRESS_PATH
 find / ! -newermt "1970-01-02" -print0 | xargs -0 rm -rf
 rm /initrd.img /initrd.img.old /vmlinuz /vmlinuz.old
-
 source /etc/profile
+
+# install syslog (sysklogd)
+echo 'install syslog (sysklogd)' > $PROGRESS_PATH
+emerge app-admin/sysklogd
+rc-update add sysklogd default
+
+# install cron (cronie)
+echo 'install cron (cronie)' > $PROGRESS_PATH
+emerge sys-process/cronie
+rc-update add cronie default
 
 # install the kernel sources
 echo 'install the kernel sources' > $PROGRESS_PATH

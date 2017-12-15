@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import Identifier from './Identifier';
 import Installer from './Installer';
+import Progress from './Progress';
 
 
 class App extends Component {
@@ -22,6 +22,7 @@ class App extends Component {
             <div className="App">
             <Identifier setToken={this.setToken.bind(this)} />
             <Installer setToken={this.setToken.bind(this)} />
+            <Progress setToken={this.setToken.bind(this)} />
             </div>
         );
     }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PASS=conoha
+PASS=conoha_hinnyuu
 
 PROGRESS_DIR=/progress
 PROGRESS_PATH=$PROGRESS_DIR/progress
@@ -16,11 +16,9 @@ nohup python3 -m http.server 80 &
 cd /
 
 # install bzip2
-echo 'install bzip2' > $PROGRESS_PATH
 apt-get --force-yes install bzip2
 
 # save fstab temporary
-echo 'save fstab temporary' > $PROGRESS_PATH
 cp /etc/fstab /tmp/fstab
 
 # change datetime of all files to epoch (withdout modprobe)
@@ -49,7 +47,6 @@ mv /lib /lib_ && ln -s /lib64 /lib
 mv /usr/lib /usr/lib_ && ln -s /usr/lib64 /usr/lib
 
 # recover fstab
-echo 'recover fstab' > $PROGRESS_PATH
 cp /tmp/fstab /etc/fstab
 
 # into Gentoo bash!
@@ -59,7 +56,6 @@ source /etc/profile
 #################################################################################
 
 # change password root
-echo 'change password root' > $PROGRESS_PATH
 echo root:$PASS | /usr/sbin/chpasswd
 
 # install an ebuild repository snapshot from the web
@@ -67,7 +63,6 @@ echo 'install an ebuild repository snapshot from the web' > $PROGRESS_PATH
 emerge-webrsync
 
 # set timezone
-echo 'set timezone' > $PROGRESS_PATH
 echo "Asia/Tokyo" > /etc/timezone
 
 # configure locales
@@ -86,11 +81,8 @@ ln -s net.lo net.eth0
 rc-update add net.eth0 default
 
 # automatically start sshd at boot
-echo 'automatically start sshd at boot' > $PROGRESS_PATH
 rc-update add sshd default
-
 # fix PermitRootLogin
-echo 'fix PermitRootLogin' > $PROGRESS_PATH
 sed -i 's/^#PermitRootLogin prohibit-password$/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 # install networking tools (dhcpcd)

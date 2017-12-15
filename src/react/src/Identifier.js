@@ -12,7 +12,12 @@ import RaisedButton from 'material-ui/RaisedButton';
 class Identifier extends Component {
     constructor(props) {
         super(props);
-        this.state = {region : 'tyo1', username : '', password : '', allowing : false};
+        this.state = {
+            region : 'tyo1',
+            username : '',
+            password : '',
+            allowing : false
+        };
 
         this.handleRegionChange = this.handleRegionChange.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -76,7 +81,6 @@ class Identifier extends Component {
                 <RaisedButton type="submit" label="認証" primary={true}　disabled={!this.state.allowing || !this.state.region || !this.state.username || !this.state.password} />
             </form>
             </Paper>
-
             </div>
         );
     }

@@ -6,6 +6,7 @@ import Paper from 'material-ui/Paper'
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem'
 import TextField from 'material-ui/TextField';
+import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
 
 class Installer extends Component {
@@ -13,22 +14,30 @@ class Installer extends Component {
         super(props);
         this.state = {
             token : '',
+            flavor: 'g-1gb',
+            tag : '',
+            adminpass : '',
+            allowing : false,
         };
 
         this.handleFlavorChange = this.handleFlavorChange.bind(this);
         this.handleNameTagChange = this.handleNameTagChange.bind(this);
         this.handleAdminPassChange = this.handleAdminPassChange.bind(this);
+        this.handleOnCheck = this.handleOnCheck.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleFlavorChange(event, index, value) {
-        this.setState({region : value});
+        this.setState({flavor : value});
     }
     handleNameTagChange(event) {
-        this.setState({username : event.target.value});
+        this.setState({tag : event.target.value});
     }
     handleAdminPassChange(event) {
-        this.setState({password : event.target.value});
+        this.setState({adminpass : event.target.value});
+    }
+    handleOnCheck(event, isInputChecked){
+        this.setState({allowing : isInputChecked});
     }
 
     handleSubmit(event) {
@@ -93,7 +102,9 @@ class Installer extends Component {
                     <br />
                     <TextField type="password" hintText="rootパスワード" floatingLabelText="rootパスワード" name="adminpass" value={this.state.adminpass} onChange={this.handleAdminPassChange}/>
                     <br />
-                    <RaisedButton type="submit" label="認証" primary={true} />
+                    <Checkbox value={this.state.allowing} label="VM追加しても問題ない(課金が発生します)" onCheck={this.handleOnCheck} />
+                    <br />
+                    <RaisedButton type="submit" label="Conohooる！" primary={true} disabled={!this.state.allowing || !this.state.flavor || !this.state.tag || !this.state.adminpass} />
                 </form>
             </Paper>
             </div>
