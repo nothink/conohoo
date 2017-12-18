@@ -26,10 +26,8 @@ class WebServer(object):
             )
         server = HTTPServer(app)
 
-        print("Binding port %d" % self.port)
         server.bind(self.port, address=self.address)
         server.start(0)
 
-        print("Proxy server is up ...")
         loop = IOLoop.instance()
         loop.start()

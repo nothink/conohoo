@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper'
@@ -13,7 +12,9 @@ class Installer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            token : '',
+            region : this.props.region,
+            token : this.props.token,
+            tenant_id : this.props.tenant_id,
             flavor: 'g-1gb',
             tag : '',
             adminpass : '',
@@ -39,39 +40,17 @@ class Installer extends Component {
     handleOnCheck(event, isInputChecked){
         this.setState({allowing : isInputChecked});
     }
-
     handleSubmit(event) {
-
-        event.preventDefault();
-
-        const endpoint = 'https://identity.' + this.state.region +  '.conoha.io/v2.0/tokens';
-
-        var payload = {auth: { passwordCredentials:
-                        {
-                            username: this.state.username,
-                            password: this.state.password
-                        }}};
-        console.log(JSON.stringify(payload));
-
-        console.log(endpoint);
-        fetch(endpoint,
-        {
-            method: "POST",
-            headers: new Headers({ 'Accept': 'application/json'}),
-            mode: 'cors',
-            credentials: 'include',
-            body: JSON.stringify(payload)
-        }).then(res => {
-   console.log(res.url, res.type, res.status);
-
-   if(res.headers.get('content-type') === 'application/json') {
-     res.json().then(json => console.log(json));
-   } else {
-     // res.arrayBuffer();
-     // res.blob();
-     res.text().then(text => console.log(text));
-   }
-}).catch(err => console.error(err));
+        var self = this;
+        fetch('/install-api',{
+            method: 'POST',
+            body: new FormData(document.getElementById('install-api'))
+        }).then(function(response) {
+            return response.text();
+        }).then(function(text) {
+            alert(text);
+//            self.props.setAddress(text);
+        });
     }
 
     render() {
@@ -87,9 +66,13 @@ class Installer extends Component {
             <div>
             <AppBar title="インストール" iconClassNameRight="muidocs-icon-navigation-expand-more" showMenuIconButton={false} />
             <Paper style={paperStyle} zDepth={1}>
-            <p>希望するインストールオプションを選択してください。</p>
-                <form action="http://localhost:9999/install-api" method="post">
-                    <SelectField name="flavor" value={this.state.flavor} floatingLabelText="VMプラン（フレーバー）" onChange={this.handleFlavorChange}>
+            <p>インストールオプションを選択してください。</p>
+                <form action="/install-api" method="post" id="install-api">
+                    <input type="hidden" name="region" value={this.state.region} />
+                    <input type="hidden" name="token" value={this.state.token} />
+                    <input type="hidden" name="tenant_id" value={this.state.tenant_id} />
+                    <input type="hidden" name="flavor" value={this.state.flavor} />
+                    <SelectField name="flavorsel" value={this.state.flavor} floatingLabelText="VMプラン（フレーバー）" onChange={this.handleFlavorChange}>
                     <MenuItem value={'g-512mb'} primaryText="512MB" />
                     <MenuItem value={'g-1gb'} primaryText="1GB" />
                     <MenuItem value={'g-2gb'} primaryText="2GB" />
@@ -102,9 +85,9 @@ class Installer extends Component {
                     <br />
                     <TextField type="password" hintText="rootパスワード" floatingLabelText="rootパスワード" name="adminpass" value={this.state.adminpass} onChange={this.handleAdminPassChange}/>
                     <br />
-                    <Checkbox value={this.state.allowing} label="VM追加しても問題ない(課金が発生します)" onCheck={this.handleOnCheck} />
+                    <Checkbox value={this.state.allowing} label="VM追加を許可(課金が発生します)" onCheck={this.handleOnCheck} />
                     <br />
-                    <RaisedButton type="submit" label="Conohooる！" primary={true} disabled={!this.state.allowing || !this.state.flavor || !this.state.tag || !this.state.adminpass} />
+                    <RaisedButton type="button" label="Conohooる！" primary={true} fullWidth={true} disabled={!this.state.allowing || !this.state.flavor || !this.state.tag || !this.state.adminpass} onClick={this.handleSubmit} />
                 </form>
             </Paper>
             </div>

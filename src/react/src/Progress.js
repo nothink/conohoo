@@ -3,17 +3,18 @@ import PropTypes from 'prop-types';
 
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper'
-import CircularProgress from 'material-ui/CircularProgress'
+import LinearProgress from 'material-ui/LinearProgress'
 
 class Progress extends Component {
     constructor(props) {
         super(props);
         this.state = {
             region : 'tyo1',
-            username : '',
-            password : '',
-            allowing : false
+            min : 0,
+            max : 100,
+            current : 0
         };
+        this.checkProgress = this.checkProgress.bind(this);
     }
 
     componentDidMount() {
@@ -24,41 +25,28 @@ class Progress extends Component {
         clearInterval(this.timer);
     }
 
+    checkProgress() {
+        this.setState({current : this.state.current + 1});
+    }
+
     render() {
         const paperStyle = {
-            width: 'auto',
+            width: 340,
             margin: 20,
             padding: 20,
             textAlign: 'left',
             display: 'inline-block',
         };
-        const progPaperStyle = {
-            width: '40',
-            height: '40',
-            margin: 10,
-            padding: 10,
-            textAlign: 'center',
-            verticalAlign: 'center',
-            display: 'inline-block',
+        const linearStyle = {
+            width: 300,
         };
 
         return (
             <div>
             <AppBar title="進捗" iconClassNameRight="muidocs-icon-navigation-expand-more" showMenuIconButton={false} />
             <Paper style={paperStyle} zDepth={1}>
-            <p>進捗テキストはここに。</p>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="determinate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
-            <Paper style={progPaperStyle} zDepth={1}><CircularProgress size="20" mode="indeterminate" value="100" /></Paper>
+            <p>進捗テキスト</p>
+            <LinearProgress style={linearStyle} mode="determinate" value={this.state.current} min={this.state.min} max={this.state.max} />
             </Paper>
             </div>
         );

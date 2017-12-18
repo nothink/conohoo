@@ -12,25 +12,29 @@ class Region(Enum):
 
 class ConoHa(object):
 
-    def __init__(self, region, username, password, tenant_name=None, tenant_id=None):
-        if not isinstance(region, Region):
-            raise ValueError('region')
-        self.region = region
+    def __init__(self, region=None, username=None, password=None, token=None, tenant_name=None, tenant_id=None):
+        if region and token and tenant_id:
+            self.region = region
+            self.token = token
+            self.tenant = tenant_id
+        elif region and username and password:
+            self.region = region
+            endpoint = self._build_endpoint('identity', '/v2.0/tokens')
+            payload = {'auth': {
+                            'tenantName': tenant_name,
+                            'tenantId': tenant_id,
+                            'passwordCredentials': {
+                                'username': username,
+                                'password': password,
+                            }}}
+            res = requests.post(endpoint, json=payload)
+            if res.status_code != 200 :
+                raise requests.exceptions.HTTPError(res.status_code)
 
-        endpoint = self._build_endpoint('identity', '/v2.0/tokens')
-        payload = {'auth': {
-                        'tenantName': tenant_name,
-                        'tenantId': tenant_id,
-                        'passwordCredentials': {
-                            'username': username,
-                            'password': password,
-                        }}}
-        res = requests.post(endpoint, json=payload)
-        if res.status_code != 200 :
+            self.token = res.json()['access']['token']['id']
+            self.tenant = res.json()['access']['token']['tenant']['id']
+        else:
             raise requests.exceptions.HTTPError()
-
-        self.token = res.json()['access']['token']['id']
-        self.tenant = res.json()['access']['token']['tenant']['id']
 
     def create(self, image_name, flavor_name, admin_pass, tag_name=None, sec_list=None, user_data=None):
         if not self.is_admin_pass_valid(admin_pass):
@@ -56,6 +60,7 @@ class ConoHa(object):
         json = self._post(endpoint, payload)
         if not json['server']['id']:
             raise Exception()
+        return json
 
     @property
     def flavors(self):

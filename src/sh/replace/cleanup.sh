@@ -4,6 +4,7 @@ PROGRESS_DIR=/progress
 PROGRESS_PATH=$PROGRESS_DIR/progress
 
 # boot http progress server
+rm -rf $PROGRESS_DIR
 if [ ! -d $PROGRESS_DIR ]; then
     mkdir $PROGRESS_DIR
 fi
