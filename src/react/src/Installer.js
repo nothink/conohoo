@@ -46,10 +46,21 @@ class Installer extends Component {
             method: 'POST',
             body: new FormData(document.getElementById('install-api'))
         }).then(function(response) {
-            return response.text();
-        }).then(function(text) {
-            alert(text);
-//            self.props.setAddress(text);
+            return response.json();
+        }).then(function(json) {
+            var address = null;
+            var addrHash = json['addresses'];
+            for (let key in addrHash) {
+                var addrList = addrHash[key];
+                for (let idx in addrList) {
+                    if (addrList[idx]['version'] == 4) {
+                        address = addrList[idx]['addr']
+                        break;
+                    }
+                }
+            }
+            self.props.setAddress(address);
+            self.props.moveRoutePath('/progress');
         });
     }
 

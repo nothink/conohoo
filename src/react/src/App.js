@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
     Route,
-    Link,
     withRouter,
     Redirect
 } from 'react-router-dom';

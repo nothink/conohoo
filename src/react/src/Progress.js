@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper'
@@ -9,16 +8,17 @@ class Progress extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            region : 'tyo1',
+            address : this.props.address,
             min : 0,
             max : 100,
-            current : 0
+            current : 0,
+            text : '準備しています...',
         };
         this.checkProgress = this.checkProgress.bind(this);
     }
 
     componentDidMount() {
-        this.timer = setInterval(this.checkProgress, 1000);
+        this.timer = setInterval(this.checkProgress, 10000);
     }
 
     componentWillUnmount() {
@@ -26,7 +26,17 @@ class Progress extends Component {
     }
 
     checkProgress() {
-        this.setState({current : this.state.current + 1});
+        var self = this;
+        fetch('/progress-server&addr=' + this.state.address).then(function(response) {
+            return response.json();
+        }).then(function(json) {
+            if ('min' in json) {
+                self.setState({min : json['min']});
+                self.setState({max : json['max']});
+                self.setState({current : json['current']});
+                self.setState({text : json['text']});
+            }
+        });
     }
 
     render() {
@@ -45,7 +55,7 @@ class Progress extends Component {
             <div>
             <AppBar title="進捗" iconClassNameRight="muidocs-icon-navigation-expand-more" showMenuIconButton={false} />
             <Paper style={paperStyle} zDepth={1}>
-            <p>進捗テキスト</p>
+            <p>{this.state.text}</p>
             <LinearProgress style={linearStyle} mode="determinate" value={this.state.current} min={this.state.min} max={this.state.max} />
             </Paper>
             </div>
