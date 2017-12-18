@@ -3,6 +3,7 @@
 from conoha import ConoHa, Region
 
 import json
+import base64
 
 from tornado.web import RequestHandler, asynchronous
 
@@ -62,7 +63,6 @@ class ConoHandler(RequestHandler):
                 'token': cono.token,
                 'tenant_id': cono.tenant,
             }
-            print(result)
             self.write(json.dumps(result))
             self.flush()
             self.finish()
@@ -74,7 +74,12 @@ class ConoHandler(RequestHandler):
             flavor = self.get_argument('flavor')
             tag = self.get_argument('tag')
             adminpass = self.get_argument('adminpass')
-            print(self.request.arguments)
+
+            with open('../sh/replace/startup.sh', 'rb') as f:
+                script = f.read()
+            script = script.replace('conoha_hinnyuu', adminpass)
+            user_data = base64.b64encode(script)
+
             cono = ConoHa(region=region, token=token, tenant_id=tenant_id)
             result = cono.create(
                 image_name='vmi-debian-9.0-amd64-unified',
@@ -82,8 +87,10 @@ class ConoHandler(RequestHandler):
                 admin_pass=adminpass,
                 tag_name=tag,
                 sec_list=['gncs-ipv6-all', 'default', 'gncs-ipv4-all'],
-                user_data='IyEvYmluL2Jhc2gKCmNkIC8Kd2dldCBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vbm90aGluay9jb25vaG9vL21hc3Rlci9zcmMvc2gvcmVwbGFjZS9zdGFydHVwLnNoIC1PIC9zdGFydHVwLnNoCmNobW9kIDc1NSAvc3RhcnR1cC5zaAovc3RhcnR1cC5zaAo=',
+                user_data=user_data,
             )
-            self.write(result)
+            server_id = result['server']['id']
+            server = cono.get_server_info(server_id=server_id)
+            self.write(json.dumps(server))
             self.flush()
             self.finish()

@@ -62,11 +62,16 @@ class ConoHa(object):
             raise Exception()
         return json
 
+    def get_server_info(self, server_id):
+        endpoint = self._build_endpoint('compute', '/v2/' + self.tenant + '/servers/' + server_id)
+        json = self._get(endpoint)
+        return json['server']
+
     @property
     def flavors(self):
         endpoint = self._build_endpoint('compute', '/v2/' + self.tenant + '/flavors')
         json = self._get(endpoint)
-        retval = {};
+        retval = {}
         for flavor in json['flavors']:
             retval[flavor['name']] = flavor['id']
         return retval
@@ -75,7 +80,7 @@ class ConoHa(object):
     def images(self):
         endpoint = self._build_endpoint('image-service', '/v2/images')
         json = self._get(endpoint)
-        retval = {};
+        retval = {}
         for image in json['images']:
             retval[image['name']] = image['id']
         return retval
@@ -84,7 +89,7 @@ class ConoHa(object):
     def security_groups(self):
         endpoint = self._build_endpoint('networking', '/v2.0/security-groups')
         json = self._get(endpoint)
-        retval = {};
+        retval = {}
         for image in json['security_groups']:
             retval[image['name']] = image['id']
         return retval
