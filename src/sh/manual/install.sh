@@ -23,7 +23,7 @@ ntpd -q -g
 cd /mnt/gentoo
 curl http://ftp.iij.ad.jp/pub/linux/gentoo/releases/amd64/autobuilds/latest-stage3-amd64.txt | grep stage3-amd64 | sed -e 's/^/http:\/\/ftp.iij.ad.jp\/pub\/linux\/gentoo\/releases\/amd64\/autobuilds\//g' | sed -e 's/ [0-9]*$//g' | xargs curl -O
 # unpacking the stage tarball
-tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
+tar xpf stage3-* --xattrs-include='*.*' --numeric-owner
 
 # TODO : edit /etc/portage/make.conf
 # TODO : setting mirrors
